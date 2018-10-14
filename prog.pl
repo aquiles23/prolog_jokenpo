@@ -1,6 +1,7 @@
-%TODO: jogar todos  os fatos em um arquivo separado.
-:- dynamic contar/2.
+:- use_module(library(pce)).
 
+
+% :- (dynamic contar/4).
 ganha(pedra, tesoura).
 ganha(papel, pedra).
 ganha(tesoura, papel).
@@ -9,23 +10,22 @@ empate(pedra, pedra).
 empate(tesoura, tesoura).
 empate(papel, papel).
 
-transicao(pedra, pedra, 1).
-transicao(pedra, papel, 2).
-transicao(pedra, tesoura, 3).
-transicao(papel, papel, 4).
-transicao(papel, pedra, 5).
-transicao(papel, tesoura, 6).
-transicao(tesoura, tesoura, 7).
-transicao(tesoura, papel, 8).
-transicao(tesoura, pedra, 9).
+
+/*
+transicao(pedra, pedra).
+transicao(pedra, papel).
+transicao(pedra, tesoura).
+transicao(papel, papel).
+transicao(papel, pedra).
+transicao(papel, tesoura).
+transicao(tesoura, tesoura).
+transicao(tesoura, papel).
+transicao(tesoura, pedra).
+
 
 % pensei em algo do tipo para contar as ocorrencias mas não ta dando muito certo
-contar(transicao(_, _, N), B) :-
-    (   B is B+1
-    ;   retract(contar(transicao(_, _, N),
-                      B-1))
-    ).
-
+contar(0,_,_,_).
+contar(X,Y,_,_):- Y is X+1.*/
 resultado(X, Y) :-
     (   ganha(X, Y),
         write('você ganhou')
@@ -36,10 +36,24 @@ resultado(X, Y) :-
     ).
 
 
-primeiro_jogo :-
-    read(X),
-    random_member(Y, [pedra, papel, tesoura]),
-    writeln(Y),
-    resultado(X, Y),
-    asserta(ultimo(X)). 
 
+jogo :-
+    new(D, dialog('JOKENPO')),
+    send(D, append, new(Jogada, menu('Escolha sua jogada'))),
+    send(Jogada, append, pedra),
+    send(Jogada, append, papel),
+    send(Jogada, append, tesoura),
+    random_member(Y, [pedra, papel, tesoura]),
+    send(D,
+         append,
+         button(jogar, message(@prolog,acao, Jogada?selection))),
+    send(D,open),
+    %random_member(Y, [pedra, papel, tesoura]),
+    writeln(Y).
+    %resultado(Jogada, Y).
+
+
+   /* asserta(ultimo(X)),
+    findall(Z, ultimo(Z), [H1,H2|T]),
+    transicao(H2,H1),
+    asserta(contar(_,_,H1,H2)).*/

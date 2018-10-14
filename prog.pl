@@ -48,8 +48,8 @@ jogo :-
          button(jogar,
                 message(@prolog,
                         resultado,
-                               Jogada?selection,
-                               create(string,Y?selection)))),
+                               create(string, '%s', @arg1?Jogada)?selection,
+                               Y?selection))),
     send(D, open).
 
     %writeln(Y).

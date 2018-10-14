@@ -1,5 +1,5 @@
 :- use_module(library(pce)).
-
+:- use_module(library(random)).
 
 % :- (dynamic contar/4).
 ganha(pedra, tesoura).
@@ -26,6 +26,7 @@ transicao(tesoura, pedra).
 % pensei em algo do tipo para contar as ocorrencias mas não ta dando muito certo
 contar(0,_,_,_).
 contar(X,Y,_,_):- Y is X+1.*/
+
 resultado(X, Y) :-
     (   ganha(X, Y),
         write('você ganhou')
@@ -34,8 +35,6 @@ resultado(X, Y) :-
     ;   empate(X, Y),
         write(empatou)
     ).
-
-
 
 jogo :-
     new(D, dialog('JOKENPO')),
@@ -46,12 +45,14 @@ jogo :-
     random_member(Y, [pedra, papel, tesoura]),
     send(D,
          append,
-         button(jogar, message(@prolog,acao, Jogada?selection))),
-    send(D,open),
-    %random_member(Y, [pedra, papel, tesoura]),
-    writeln(Y).
-    %resultado(Jogada, Y).
+         button(jogar,
+                message(@prolog,
+                        resultado,
+                               Jogada?selection,
+                               create(string,Y?selection)))),
+    send(D, open).
 
+    %writeln(Y).
 
    /* asserta(ultimo(X)),
     findall(Z, ultimo(Z), [H1,H2|T]),

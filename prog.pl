@@ -27,13 +27,13 @@ transicao(tesoura, pedra).
 contar(0,_,_,_).
 contar(X,Y,_,_):- Y is X+1.*/
 
-resultado(X, Y) :-
+resultado(X, Y, Result) :-
     (   ganha(X, Y),
-        write('você ganhou')
+        send(Result, selection, 'Você ganhou!!')
     ;   ganha(Y, X),
-        write('você perdeu')
+    send(Result, selection, 'Você perdeu :/')
     ;   empate(X, Y),
-        write(empatou)
+        send(Result, selection, 'Você empatou')
     ).
 
 jogo :-
@@ -43,13 +43,12 @@ jogo :-
     send(Jogada, append, papel),
     send(Jogada, append, tesoura),
     random_member(Y, [pedra, papel, tesoura]),
+    new(Result, label),
+    send(D, append, Result),
     send(D,
          append,
-         button(jogar,
-                message(@prolog,
-                        resultado,
-                               create(string, '%s', @arg1?Jogada)?selection,
-                               Y?selection))),
+         button(jogar, message(@prolog, resultado, Jogada?selection, Y, Result))),
+    send(D, append, button(cancel, message(D, destroy))),
     send(D, open).
 
     %writeln(Y).

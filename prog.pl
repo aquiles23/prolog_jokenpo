@@ -42,5 +42,5 @@ jogo :-
     send(D,
          append,
          button(jogar, message(@prolog, resultado, Jogada?selection, Result, Oponente))),
-    send(D, append, button(cancel, message(D, destroy))),
+    send(D, append, button(cancelar, message(D, destroy))),
     send(D, open).

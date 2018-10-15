@@ -2,6 +2,11 @@
 :- use_module(library(random)).
 
 :-dynamic markov/3.
+:-dynamic jogada_passada/1.
+:-dynamic proximo_movimento/1.
+
+proximo_movimento(papel).
+jogada_passada(pedra).
 
 markov(pedra, pedra, 0).
 markov(pedra, tesoura, 0).
@@ -34,17 +39,29 @@ esquece1(X):-
     retract(X).
 esquece1(X).
 
+adiciona_proximo(X):-
+    esquece(proximo_movimento(Y)), assert(proximo_movimento(X)).
+
+atualiza_jogada(X):-
+    esquece(jogada_passada(Y)), assert(jogada_passada(X)). 
+
 adiciona(X, Y):-
     markov(X, Y, Z), esquece(markov(X, Y, Z)), sum(Z, 1, R), assert(markov(X, Y, R)).
 
-proximaJogada(P):-
-    my_maximum(X, Z), ganha(P, X).  
+atualiza_prox_movimento:-
+    my_maximum(X, Z), markov(X, Y, Z), ganha(P, Y), adiciona_proximo(P).
+
 my_maximum(X, Z):-
     markov(X, _, Z), forall(markov(X, _, Y), (Y>Z->fail;true)).
 
+decide_jogada(Y):-
+    atualiza_prox_movimento, proximo_movimento(Y).
+
 resultado(X, Result, Oponente) :-
     random_member(Y, [pedra, papel, tesoura]),
-    adiciona(X, Y),
+    % decide_jogada(Y),
+    jogada_passada(Z),
+    adiciona(Z, X),
     (   
         ganha(X, Y),
         send(Result, selection, 'Você ganhou!!'),
@@ -61,7 +78,8 @@ resultado(X, Result, Oponente) :-
         send(Oponente, selection, 'O oponente jogou '),
         send(Oponente, append, Y),
         send(Oponente, append, '.')
-    ).
+    ),
+    atualiza_jogada(X).
 
 jogo :-
     new(D, dialog('JOKENPO')),

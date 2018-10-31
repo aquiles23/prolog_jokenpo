@@ -58,8 +58,8 @@ decide_jogada(Y):-
     atualiza_prox_movimento, proximo_movimento(Y).
 
 resultado(X, Result, Oponente) :-
-    random_member(Y, [pedra, papel, tesoura]),
-    % decide_jogada(Y),
+    % random_member(Y, [pedra, papel, tesoura]),
+    decide_jogada(Y),
     jogada_passada(Z),
     adiciona(Z, X),
     (   
